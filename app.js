@@ -8,16 +8,29 @@ const cameraDefaults = require('./cameraDefaults');
 
 client.on('connect', function () {
     client.subscribe('camera/connected/#');
+    client.subscribe('camera/update/#');
 });
 
 client.on("message", (topic, message) => {
     console.log("topic", topic);
-    if (topic.includes("camera/connected")) {        
+    if (topic.includes("camera/update")){
+        console.log("camera update");
+        const cameraProps = JSON.parse(message);
+        console.log(JSON.parse(message));
+        const routeSegments = topic.split("/");
+        const cameraName = routeSegments[routeSegments.length - 1];
+        Camera.findOneAndUpdate({name: cameraName}, cameraProps, function(err, doc){
+            if (err) console.warn(err);
+            console.log('updated succesfully, send update to mqtt broker');
+        });
+    }
+    else if (topic.includes("camera/connected")) {        
         //if messge is 1- device is connectedconnected and payload is 1, device has connected to broker.
         if (message.toString() == 1) {
             const routeSegments = topic.split("/");
             const cameraName = routeSegments[routeSegments.length - 1];
-            //See if camera has already been initialized (exists in db)                       
+            //See if camera has already been initialized (exists in db)   
+            //replace with find one and update     Camera.findOneAndUpdate({name: cameraName}, cameraProps, {upsert:true}, function(err, doc){               
             Camera.find({ name: cameraName })
                 .then(cameras => {
                     if (cameras.length) handleCameraAlreadyInitialized(cameras, cameraName);
