@@ -1,7 +1,7 @@
 module.exports = {    
-    isEnabled: false,
-    zoneX: 0,
-    zoneY: 0,
-    zoneWidth: 100,
-    zoneHeight: 100    
+    isDetectionEnabled: true,
+    zoneX: 0.25,
+    zoneY: 0.25,
+    zoneWidth: 0.5,
+    zoneHeight: 0.5    
 }
