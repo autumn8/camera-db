@@ -8,12 +8,12 @@ const cameraDefaults = require('./cameraDefaults');
 
 client.on('connect', function () {
     client.subscribe('camera/connected/#');
-    client.subscribe('camera/update/#');
+    client.subscribe('camera/settingsupdate/#');
 });
 
 client.on("message", (topic, message) => {
     console.log("topic", topic);
-    if (topic.includes("camera/update")) {
+    if (topic.includes("camera/settingsupdate")) {
         console.log("camera update");
         const cameraProps = JSON.parse(message);
         console.log(JSON.parse(message));
@@ -32,7 +32,6 @@ client.on("message", (topic, message) => {
     }
 });
 
-
 function onCameraConnected(topic, message) {
     const routeSegments = topic.split("/");
     const cameraName = routeSegments[routeSegments.length - 1];
@@ -45,7 +44,7 @@ function onCameraConnected(topic, message) {
         .then(camera => {
             console.log(camera);
             const cameraSettings = JSON.stringify(camera)
-            client.publish(`camera/initialized/${camera.name}`, cameraSettings);
+            client.publish(`camera/settingsupdate/${camera.name}`, cameraSettings);
         })
         .catch(error => console.log(error));
 }
